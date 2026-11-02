@@ -1,5 +1,7 @@
 # Timer on CH592. block/TMR_FULL has DMA (TMR1/TMR2);
 # block/TMR_NODMA has no DMA address registers (TMR0/TMR3). Kind is tmr.
+# PWM_MOD (+0x04) is from CH592/CH591 DS v1.9 Tables 8-1..8-4 and the EVT v1.7
+# CH592SFR.h; the MounRiver CH59X SVD omits it.
 
 block/TMR_FULL:
   description: Timer1 register.
@@ -19,6 +21,11 @@ block/TMR_FULL:
     byte_offset: 2
     bit_size: 8
     fieldset: INTER_EN
+  - name: PWM_MOD
+    description: RW, TMR PWM mode.
+    byte_offset: 4
+    bit_size: 8
+    fieldset: PWM_MOD
   - name: INT_FLAG
     description: RW1, TMR interrupt flag.
     byte_offset: 6
@@ -74,6 +81,11 @@ block/TMR_NODMA:
     byte_offset: 2
     bit_size: 8
     fieldset: INTER_EN
+  - name: PWM_MOD
+    description: RW, TMR PWM mode.
+    byte_offset: 4
+    bit_size: 8
+    fieldset: PWM_MOD
   - name: INT_FLAG
     description: RW1, TMR interrupt flag.
     byte_offset: 6
@@ -260,4 +272,11 @@ fieldset/INT_FLAG:
     description: RW1, interrupt flag for timer FIFO overflow.
     bit_offset: 4
     bit_size: 1
-
+fieldset/PWM_MOD:
+  description: RW, TMR PWM mode.
+  bit_size: 8
+  fields:
+  - name: PWM_MOD
+    description: 'RW, PWM first-data repetition: 0=first data sent once, 1=first data repeated per CTRL_MOD.PWM_REPEAT.'
+    bit_offset: 0
+    bit_size: 1

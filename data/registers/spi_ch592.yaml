@@ -1,4 +1,6 @@
 # SPI register block. Kind is spi; full layout is block/SPI_FULL; instance number is only in the family list.
+# CTRL_MOD1/CTRL_MOD2 (+0x08/+0x09) are from CH592/CH591 DS v1.9 Table 10-1 and
+# the EVT v1.7 CH592SFR.h; the MounRiver CH59X SVD omits them.
 
 block/SPI_FULL:
   description: SPI register.
@@ -49,6 +51,16 @@ block/SPI_FULL:
     byte_offset: 7
     bit_size: 8
     fieldset: FIFO_COUNT
+  - name: CTRL_MOD1
+    description: RW, SPI mode control 1.
+    byte_offset: 8
+    bit_size: 8
+    fieldset: CTRL_MOD1
+  - name: CTRL_MOD2
+    description: RW, SPI mode control 2.
+    byte_offset: 9
+    bit_size: 8
+    fieldset: CTRL_MOD2
   - name: TOTAL_CNT
     description: RW, SPI total byte count, only low 12 bit.
     byte_offset: 12
@@ -303,4 +315,20 @@ fieldset/RUN_FLAG:
   - name: SLV_SELECT
     description: RO, SPI slave selection status.
     bit_offset: 7
+    bit_size: 1
+fieldset/CTRL_MOD1:
+  description: RW, SPI mode control 1.
+  bit_size: 8
+  fields:
+  - name: MST_CLK_SEL
+    description: 'RW, master (MODE_SLAVE=0): 1=invert clock polarity; slave 2-wire mode (MODE_SLAVE=1): 1=input, 0=output.'
+    bit_offset: 0
+    bit_size: 1
+fieldset/CTRL_MOD2:
+  description: RW, SPI mode control 2.
+  bit_size: 8
+  fields:
+  - name: SLV_FAST_MOD
+    description: RW, slave fast mode for higher SCK frequencies.
+    bit_offset: 0
     bit_size: 1

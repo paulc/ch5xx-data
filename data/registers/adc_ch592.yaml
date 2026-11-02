@@ -1,3 +1,6 @@
+# SCAN_CFG1/SCAN_CFG2 (+0x70/+0x74) are from CH592/CH591 DS v1.9 section 15.4
+# and the EVT v1.7 CH592SFR.h; the MounRiver CH59X SVD omits them. Scan slot 0
+# is the CHANNEL register.
 block/ADC:
   description: Analog to Digital Converter.
   items:
@@ -64,6 +67,14 @@ block/ADC:
     byte_offset: 108
     bit_size: 16
     fieldset: DMA_END
+  - name: SCAN_CFG1
+    description: RW, ADC scan configuration 1.
+    byte_offset: 112
+    fieldset: SCAN_CFG1
+  - name: SCAN_CFG2
+    description: RW, ADC scan configuration 2.
+    byte_offset: 116
+    fieldset: SCAN_CFG2
 fieldset/DATA:
   description: RO, ADC data.
   bit_size: 16
@@ -211,4 +222,70 @@ fieldset/TEM_SENSOR:
   - name: TEM_SEN_PWR_ON
     description: 'RW, temperature sensor power control: 0=power down, 1=power on.'
     bit_offset: 7
+    bit_size: 1
+fieldset/SCAN_CFG1:
+  description: RW, ADC scan configuration 1.
+  fields:
+  - name: SCAN_CH1
+    description: 'RW, analog input for scan slot 1: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 0
+    bit_size: 4
+  - name: SCAN_CH2
+    description: 'RW, analog input for scan slot 2: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 4
+    bit_size: 4
+  - name: SCAN_CH3
+    description: 'RW, analog input for scan slot 3: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 8
+    bit_size: 4
+  - name: SCAN_CH4
+    description: 'RW, analog input for scan slot 4: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 12
+    bit_size: 4
+  - name: SCAN_CH5
+    description: 'RW, analog input for scan slot 5: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 16
+    bit_size: 4
+  - name: SCAN_CH6
+    description: 'RW, analog input for scan slot 6: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 20
+    bit_size: 4
+  - name: SCAN_CH7
+    description: 'RW, analog input for scan slot 7: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 24
+    bit_size: 4
+  - name: SCAN_CH8
+    description: 'RW, analog input for scan slot 8: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 28
+    bit_size: 4
+fieldset/SCAN_CFG2:
+  description: RW, ADC scan configuration 2.
+  fields:
+  - name: SCAN_CH9
+    description: 'RW, analog input for scan slot 9: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 0
+    bit_size: 4
+  - name: SCAN_CH10
+    description: 'RW, analog input for scan slot 10: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 4
+    bit_size: 4
+  - name: SCAN_CH11
+    description: 'RW, analog input for scan slot 11: 0000-0101=AIN0-AIN5, 1000-1101=AIN8-AIN13, 1110=VBAT, 1111=TS.'
+    bit_offset: 8
+    bit_size: 4
+  - name: SCAN_QUAN
+    description: RW, number of scan channels; 0 disables scan mode.
+    bit_offset: 16
+    bit_size: 4
+  - name: SCAN_SEL
+    description: 'RW, scan function: 0=TouchKey, 1=ADC.'
+    bit_offset: 20
+    bit_size: 1
+  - name: IE_SCAN_END
+    description: RW, end-of-scan interrupt enable.
+    bit_offset: 21
+    bit_size: 1
+  - name: IF_SCAN_END
+    description: RW1, end-of-scan flag, write 1 to clear.
+    bit_offset: 24
     bit_size: 1
