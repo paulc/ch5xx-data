@@ -146,8 +146,19 @@ pub fn render_memory_x(regions: &[Region]) -> String {
     writeln!(s).unwrap();
 
     let text_target = if boot_aliased { "CODE" } else { &primary.name };
-    if boot_aliased {
-        writeln!(s, r#"REGION_ALIAS("FLASH", CODE);"#).unwrap();
+    // qingke-rt's link.x places sections in FLASH and RAM by name, so those
+    // must exist even when the chip's regions are called CODEFLASH / SRAM.
+    let has_region = |name: &str| regions.iter().any(|r| r.name == name);
+    let mut aliased = false;
+    if !has_region("FLASH") {
+        writeln!(s, r#"REGION_ALIAS("FLASH", {});"#, text_target).unwrap();
+        aliased = true;
+    }
+    if !has_region("RAM") {
+        writeln!(s, r#"REGION_ALIAS("RAM", {});"#, ram_name).unwrap();
+        aliased = true;
+    }
+    if aliased {
         writeln!(s).unwrap();
     }
     writeln!(s, r#"REGION_ALIAS("REGION_TEXT", {});"#, text_target).unwrap();
