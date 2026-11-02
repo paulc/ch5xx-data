@@ -264,7 +264,9 @@ Reading the output:
 
 ## 4. CH592 / CH591 review (DS v1.9, EVT v1.7)
 
-State of `main` at f088cf1, checked with `tools/xcheck.py` and by hand.
+State of `main` at f088cf1, checked with `tools/xcheck.py` and by hand. The
+core blocks at 0xE000xxxx were checked by hand: their datasheet table gives
+offsets, not addresses, so the tool does not pick them up.
 
 What was already right: every base address in DS Table 2-5, the full vector
 table (16–35), every UART/I2C/PWMx/LCD/GPIO register address and width, USB
@@ -287,8 +289,13 @@ Fixed on branch `ch592-ds-v1.9`:
 | CH592/CH591 chip | Core `qingke-v3c` → `qingke-v4c` | DS: "QingKe 32-bit RISC-V4C" |
 | Family | Placeholder for the FlashROM controller at 0x40001800 | DS Table 2-5 |
 | CH591 | Own family list without TouchKey, I2C0, UART2, UART3 | DS product table and overview |
+| PFIC (shared, `pfic_ch569/573/583/585`) | `IPRIOR` is one byte per IRQ at 0x400 + n (256-entry array), replacing 64 SVD registers 0x20 apart; `pfic_ch585` `SCTLR` gains `SYSRESET` | DS 3.4.1, `core_riscv.h` (CH592, CH58x, CH57x SDKs), `qingke::pfic` |
 
 Left open, on purpose:
+
+- **`PFIC.SCTLR.LOCKUP` (bit 6).** The CH592 DS documents it, but
+  `pfic_ch585` is shared with seven other chips whose datasheets were not
+  checked, so it is not added there.
 
 - **Flash controller registers.** DS Table 4-1 names `R32_FLASH_DATA`,
   `R32_FLASH_CONTROL`, `R8_FLASH_CTRL` and `R8_FLASH_CFG`, but neither the DS
