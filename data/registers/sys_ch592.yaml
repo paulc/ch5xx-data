@@ -1,6 +1,26 @@
+# SYS on CH591/CH592, checked against CH592/CH591 DS v1.9 and the EVT v1.7
+# CH592SFR.h. The MounRiver CH59X SVD this was drafted from predates both:
+#
+# - IWDG_KR/IWDG_CFG (0x00/0x04) and SLEEP_CTRL3 (0x14) are added from the DS
+#   (Tables 14-1, 5-1). The SVD has neither.
+# - SLEEP_CTRL2 (0x10, TouchKey wake enable) and AUX_POWER_ADJ.IB_TKEY_SEL are
+#   dropped: older CH592SFR.h copies define them, the EVT v1.7 header removes
+#   them, and the DS documents neither.
+# - PIN_ALTERNATE bits 3/7/11 (TMR3/UART3/I2C remap) are reserved in the DS
+#   (Table 7-7 lists no remap for them) and point at pins no CH59x package
+#   bonds (PA2, PB20, PB21), so they are dropped. DEBUG_EN (bit 13) is added.
 block/SYS:
   description: System Control Register.
   items:
+  - name: IWDG_KR
+    description: WO, Watchdog key register.
+    byte_offset: 0
+    access: Write
+    fieldset: IWDG_KR
+  - name: IWDG_CFG
+    description: RW, Watchdog configuration register.
+    byte_offset: 4
+    fieldset: IWDG_CFG
   - name: CLK_CFG
     description: RWA, system clock configuration, SAM.
     byte_offset: 8
@@ -25,10 +45,10 @@ block/SYS:
     byte_offset: 15
     bit_size: 8
     fieldset: SLP_POWER_CTRL
-  - name: SLEEP_CTRL2
-    description: RWA, Sleep control register, SAM.
-    byte_offset: 16
-    fieldset: SLEEP_CTRL2
+  - name: SLEEP_CTRL3
+    description: RWA, Sleep control register 3, SAM.
+    byte_offset: 20
+    fieldset: SLEEP_CTRL3
   - name: PIN_ALTERNATE
     description: RW, function pin alternate configuration.
     byte_offset: 24
@@ -100,10 +120,6 @@ fieldset/AUX_POWER_ADJ:
     description: RWA, retain. The original value must be kept unchanged when writing.
     bit_offset: 8
     bit_size: 4
-  - name: IB_TKEY_SEL
-    description: RWA, TouchKey bias current, used to stabilize I/O potential and prevent accidental wake-up.
-    bit_offset: 14
-    bit_size: 2
 fieldset/INT32K_TUNE:
   description: RWA, internal 32KHz oscillator tune control, SAM.
   bit_size: 16
@@ -128,10 +144,6 @@ fieldset/PIN_ALTERNATE:
     description: RW, TMR2 alternate pin enable.
     bit_offset: 2
     bit_size: 1
-  - name: PIN_TMR3
-    description: RW, TMR3 alternate pin enable.
-    bit_offset: 3
-    bit_size: 1
   - name: PIN_UART0
     description: RW, RXD0/TXD0 alternate pin enable.
     bit_offset: 4
@@ -144,10 +156,6 @@ fieldset/PIN_ALTERNATE:
     description: RW, RXD2/TXD2 alternate pin enable.
     bit_offset: 6
     bit_size: 1
-  - name: PIN_UART3
-    description: RW, RXD3/TXD3 alternate pin enable.
-    bit_offset: 7
-    bit_size: 1
   - name: PIN_SPI0
     description: RW, SCS/SCK0/MOSI/MISO alternate pin enable.
     bit_offset: 8
@@ -156,13 +164,13 @@ fieldset/PIN_ALTERNATE:
     description: RW, PWM4/PWM5/PWM7/PWM8/PWM9 alternate pin enable.
     bit_offset: 10
     bit_size: 1
-  - name: PIN_I2C
-    description: RW, SCL/SDA alternate pin enable.
-    bit_offset: 11
-    bit_size: 1
   - name: PIN_MODEM
-    description: RW, DSR/DTR alternate pin enable.
+    description: 'RW, UART0 modem pin mapping: 0=RI/DCD on PA[6]/PA[7], 1=RI_/DCD_ on PB[12]/PB[13].'
     bit_offset: 12
+    bit_size: 1
+  - name: DEBUG_EN
+    description: 'RW, debug interface disable: 0=enable, 1=disable. Only effective when the ISP tool has enabled debug.'
+    bit_offset: 13
     bit_size: 1
   - name: RF_ANT_SW_EN
     description: RW, RF antenna switch control output enable.
@@ -224,9 +232,17 @@ fieldset/POWER_PLAN:
     description: RWA, DC/DC converter pre-enable.
     bit_offset: 10
     bit_size: 1
+  - name: XT_PRE_CFG
+    description: 'RWA, HSE pre-wake time: 00=0.531ms, 01=0.968ms, 10=1.406ms, 11=1.781ms.'
+    bit_offset: 11
+    bit_size: 2
   - name: Reserved
     description: RWA, retain. Must write 1.
     bit_offset: 13
+    bit_size: 1
+  - name: XT_PRE_EN
+    description: RWA, HSE pre-wake enable. Must be timed from LSI or LSE.
+    bit_offset: 14
     bit_size: 1
   - name: PWR_PLAN_EN
     description: RWA, must write 0010.
@@ -282,17 +298,51 @@ fieldset/PIN_CONFIG2:
     description: RW, PB10-PB15 channel pin digital input enable.
     bit_offset: 26
     bit_size: 6
-fieldset/SLEEP_CTRL2:
-  description: RWA, Sleep control register, SAM.
+fieldset/IWDG_CFG:
+  description: RW, Watchdog configuration register.
   fields:
-  - name: TKEY_WAKE_EN1
-    description: 'RWA, Touch button wake-up enable: 1: On; 0: Close. Each digit corresponds to a button.'
+  - name: RLR
+    description: 'RW, RL [11:0]: Watchdog counter reload (with write protection).'
     bit_offset: 0
-    bit_size: 6
-  - name: TKEY_WAKE_EN2
-    description: 'RWA, Touch button wake-up enable: 1: On; 0: Close. Each digit corresponds to a button.'
-    bit_offset: 8
-    bit_size: 6
+    bit_size: 12
+  - name: PR
+    description: 'RW, Prescaler (with write protection): 000=/4 ... 111=/512.'
+    bit_offset: 12
+    bit_size: 3
+  - name: PVU
+    description: RO, Configure register update flag bit (with write protection).
+    bit_offset: 15
+    bit_size: 1
+  - name: COUNT
+    description: RO, Watchdog countdown counter.
+    bit_offset: 16
+    bit_size: 12
+  - name: STOP_EN
+    description: RW, Watchdog stop enabled (with write protection).
+    bit_offset: 29
+    bit_size: 1
+  - name: WR_PROTECT
+    description: RO, Write protection.
+    bit_offset: 30
+    bit_size: 1
+  - name: IWDG_EN
+    description: 'RO, Watch dog start switch: 1: ON; 0: Close.'
+    bit_offset: 31
+    bit_size: 1
+fieldset/IWDG_KR:
+  description: WO, Watchdog key register.
+  fields:
+  - name: IWDG_KR
+    description: 'WO, KEY [15:0]: 0xAAAA reload, 0x5555 unlock, 0xCCCC start.'
+    bit_offset: 0
+    bit_size: 16
+fieldset/SLEEP_CTRL3:
+  description: RWA, Sleep control register 3, SAM.
+  fields:
+  - name: SLP_GPIO_EDGE_MODE
+    description: 'RWA, GPIO wake edge when GPIO_WAKE_MODE=1: 0=rising edge, 1=any edge.'
+    bit_offset: 0
+    bit_size: 1
 fieldset/BAT_DET_CFG:
   description: RWA, battery voltage detector configuration, SAM.
   bit_size: 8
