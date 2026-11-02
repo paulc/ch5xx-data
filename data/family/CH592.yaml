@@ -1,6 +1,8 @@
-# CH591 and CH592. Generated from svd/fixed/ch59xxx.svd by
-# scripts/gen-from-svd.py. Clocks, pins and interrupts-per-signal are filled
-# in by hand. Named after CH592; CH591 includes the same list.
+# CH592. Generated from svd/fixed/ch59xxx.svd by scripts/gen-from-svd.py,
+# then checked against CH592/CH591 DS v1.9 table 2-5 and the EVT v1.7
+# CH592SFR.h. Clocks, pins and interrupts-per-signal are filled in by hand.
+# CH591 drops I2C, TouchKey and two UARTs; it has its own list in
+# data/family/CH591.yaml.
 
 - name: SYS
   address: 0x40001000
@@ -43,6 +45,13 @@
     kind: gpio
     version: ch592
     block: GPIO
+
+# Placeholder: DS v1.9 table 2-5 places the FlashROM controller here
+# (R32_FLASH_DATA, R32_FLASH_CONTROL, R8_FLASH_CTRL, R8_FLASH_CFG) but neither
+# the DS nor CH592SFR.h defines its bits; erase and program go through the
+# ISP library. Kept so the base address stays recorded.
+- name: FLASH
+  address: 0x40001800
 
 - name: TMR0
   address: 0x40002000

@@ -1,0 +1,145 @@
+# CH591. The CH592 die with the TouchKey and I2C modules removed and only two
+# UARTs bonded, per CH592/CH591 DS v1.9 (product table and section "Overview":
+# "The CH591 removes the touch-key detection module, the I2C module ... and the
+# ADC does not support DMA"). This is data/family/CH592.yaml minus TouchKey,
+# I2C0, UART2 and UART3. UART0/UART1 are the ones the CH591 pinouts route
+# (RXD0/TXD0, RXD1/TXD1); RXD3/TXD3 are absent from the CH591F PA4/PA5 pins.
+#
+# The ADC keeps its DMA registers: the DS says CH591 ADC DMA is unsupported but
+# gives no separate register map, so no reduced ADC block exists yet.
+#
+# The vector table is unchanged: the CH591 templates ship the CH592 startup
+# file, so data/interrupts/CH592.yaml is still included.
+
+- name: SYS
+  address: 0x40001000
+  registers:
+    kind: sys
+    version: ch592
+    block: SYS
+
+- name: RTC
+  address: 0x40001000
+  registers:
+    kind: rtc
+    version: ch585
+    block: RTC
+
+- name: System_control
+  address: 0x40001000
+  registers:
+    kind: system_control
+    version: ch592
+    block: System_control
+
+- name: ADC
+  address: 0x40001000
+  registers:
+    kind: adc
+    version: ch592
+    block: ADC
+
+- name: GPIO
+  address: 0x40001000
+  registers:
+    kind: gpio
+    version: ch592
+    block: GPIO
+
+# Placeholder: DS v1.9 table 2-5 places the FlashROM controller here
+# (R32_FLASH_DATA, R32_FLASH_CONTROL, R8_FLASH_CTRL, R8_FLASH_CFG) but neither
+# the DS nor CH592SFR.h defines its bits; erase and program go through the
+# ISP library. Kept so the base address stays recorded.
+- name: FLASH
+  address: 0x40001800
+
+- name: TMR0
+  address: 0x40002000
+  registers:
+    kind: tmr
+    version: ch592
+    block: TMR_NODMA
+
+- name: TMR1
+  address: 0x40002400
+  registers:
+    kind: tmr
+    version: ch592
+    block: TMR_FULL
+
+- name: TMR2
+  address: 0x40002800
+  registers:
+    kind: tmr
+    version: ch592
+    block: TMR_FULL
+
+- name: TMR3
+  address: 0x40002C00
+  registers:
+    kind: tmr
+    version: ch592
+    block: TMR_NODMA
+
+- name: UART0
+  address: 0x40003000
+  registers:
+    kind: uart
+    version: ch585
+    block: UART_FULL
+
+- name: UART1
+  address: 0x40003400
+  registers:
+    kind: uart
+    version: ch585
+    block: UART_NOMODEM
+
+- name: SPI0
+  address: 0x40004000
+  registers:
+    kind: spi
+    version: ch592
+    block: SPI_FULL
+
+- name: PWMx
+  address: 0x40005000
+  registers:
+    kind: pwmx
+    version: ch592
+    block: PWMx
+
+- name: LCD
+  address: 0x40006000
+  registers:
+    kind: lcd
+    version: ch592
+    block: LCD
+
+- name: USB
+  address: 0x40008000
+  registers:
+    kind: usb
+    version: ch592
+    block: USB
+
+
+# Placeholder: the vendor SVD lists BLE at this address but gives it no
+# registers, so there is nothing to generate yet. Kept so the base address
+# stays recorded.
+- name: BLE
+  address: 0x4000C000
+
+- name: PFIC
+  address: 0xE000E000
+  registers:
+    kind: pfic
+    version: ch585
+    block: PFIC
+
+- name: Systick
+  address: 0xE000F000
+  registers:
+    kind: systick
+    version: ch585
+    block: Systick

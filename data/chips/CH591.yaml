@@ -1,15 +1,19 @@
-# CH591, from the MounRiver CH59X SDK rather than a datasheet: none was
-# available. The CH591 templates ship the CH592 SFR header and ISP library
-# unchanged and only the linker script differs, cutting the code flash from
-# 448KB to 192KB. SRAM stays 26KB. The CH592 header reads ID_CH591 = 0x91.
+# CH591, from the CH592/CH591 datasheet V1.9 (CH592DS1) and the CH591
+# templates in the EVT v1.7 SDK, which ship the CH592 SFR header and ISP
+# library unchanged; only the linker script differs, cutting code flash from
+# 448KB to 192KB. SRAM stays 26KB. R8_CHIP_ID reads 0x91.
 #
-# Flash geometry follows ISP592.h, the same as CH592: code erased in 4KB blocks
-# and programmed a dword at a time. The 32KB data flash that header describes
-# has no address in the SDK, so it is not mapped here.
+# The DS gives CH591 192KB CodeFlash + 24KB BootLoader + 32KB DataFlash and a
+# 256KB FlashROM in total, but its address table only covers the 512KB CH592
+# layout, so the DataFlash address is not known and it is not mapped here.
+# CodeFlash geometry follows ISP592.h, as on CH592.
+#
+# Peripherals differ from CH592 (no TouchKey, no I2C, two UARTs), so CH591 has
+# its own family list.
 name: CH591
 family: QingKe RISC-V-based, BLE MCU
 subfamily: RISC-V Core BLE Wireless MCU
-product_type: QingKe V3C core, BLE
+product_type: QingKe V4C core, BLE
 packages:
   - name: CH591D
     package: QFN20
@@ -34,14 +38,18 @@ memory:
     address: 0x20000000
     size: 26K
 docs:
+  - type: datasheet
+    title: CH592/CH591 datasheet
+    name: CH592DS1 V1.9
+    url: https://www.wch.cn/downloads/CH592DS1_PDF.html
   - type: homepage
     title: CH591 product page
     name: ""
     url: https://www.wch.cn/products/CH591.html
 cores:
-  - name: qingke-v3c
+  - name: qingke-v4c
     arch: riscv
     peripherals: []
     include_peripherals:
-      - "../family/CH592.yaml"
+      - "../family/CH591.yaml"
     include_interrupts: "../interrupts/CH592.yaml"

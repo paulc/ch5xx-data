@@ -1,18 +1,25 @@
-# CH592, from the MounRiver CH59X SDK rather than a datasheet: none was
-# available. The CH592F and CH592X linker scripts both give 448KB of code and
-# 26KB of SRAM, and ISP592.h, which the CH591 templates ship unchanged, gives
-# the flash geometry: code erased in 4KB blocks and programmed a dword at a
-# time, data 32KB erased in 256B pages and programmed a byte at a time, both
-# through the ISP library. The data region's address is not stated anywhere in
-# the SDK, so it is not mapped here.
+# CH592, from the CH592/CH591 datasheet V1.9 (CH592DS1), cross-checked with the
+# EVT v1.7 SDK (CH592SFR.h, ISP592.h, Link.ld) in openwch/ch592.
 #
-# The CH592 SFR header reads ID_CH592 = 0x92. Packages follow the SDK
-# templates, which stop at the package letter.
+# FlashROM is 512KB (DS table 2-2): 448KB CodeFlash at 0x00000, 32KB DataFlash
+# at 0x70000, 24KB BootLoader at 0x78000 and 8KB InfoFlash at 0x7E000. Only the
+# two user regions are mapped. Both go through the ISP library: CodeFlash is
+# erased in 4KB blocks and programmed a dword at a time, DataFlash erased in
+# 256B pages and programmed a byte at a time (ISP592.h). CH592A cannot page
+# erase (DS 4.4), so on that package DataFlash erase is 4KB too.
+#
+# SRAM is 26KB at 0x20000000: RAM24K then RAM2K, contiguous (DS table 2-4).
+#
+# R8_CHIP_ID reads 0x92 on every package. Packages stop at the package letter;
+# CH592A is the 2.3V-minimum QFN28 variant of CH592F (DS product table).
 name: CH592
 family: QingKe RISC-V-based, BLE MCU
 subfamily: RISC-V Core BLE Wireless MCU
-product_type: QingKe V3C core, BLE
+product_type: QingKe V4C core, BLE
 packages:
+  - name: CH592A
+    package: QFN28
+    device_id: 0x92000000
   - name: CH592D
     package: QFN20
     device_id: 0x92000000
@@ -31,17 +38,29 @@ memory:
       - type: standard
         erase_size: 4K
         write_size: 4
+  - name: DATAFLASH
+    kind: flash
+    address: 0x70000
+    size: 32K
+    modes:
+      - type: standard
+        erase_size: 256
+        write_size: 1
   - name: SRAM
     kind: ram
     address: 0x20000000
     size: 26K
 docs:
+  - type: datasheet
+    title: CH592/CH591 datasheet
+    name: CH592DS1 V1.9
+    url: https://www.wch.cn/downloads/CH592DS1_PDF.html
   - type: homepage
     title: CH592 product page
     name: ""
     url: https://www.wch.cn/products/CH592.html
 cores:
-  - name: qingke-v3c
+  - name: qingke-v4c
     arch: riscv
     peripherals: []
     include_peripherals:
