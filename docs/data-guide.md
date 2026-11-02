@@ -60,8 +60,8 @@ Points worth knowing:
 cargo run -p ch5xx-data-gen      # just the JSON step
 cargo run -p ch5xx-metapac-gen -- CH592     # one chip
 
-# compile-check one chip (one chip feature at a time; build-std because the
-# HAL targets riscv32imac with +xwchc)
+# compile-check one chip (one chip feature at a time; build-std so no rustup
+# target needs installing)
 cd build/ch5xx-metapac
 cargo +nightly check -Zbuild-std=core --target riscv32imac-unknown-none-elf \
     --features ch592,pac,metadata
