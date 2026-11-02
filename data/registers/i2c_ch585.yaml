@@ -27,9 +27,8 @@ block/I2C:
     bit_size: 16
     fieldset: DATAR
   - name: STAR1
-    description: RO, I2C stauts register 1.
+    description: RW0, I2C stauts register 1 (error flags are cleared by writing 0).
     byte_offset: 20
-    access: Read
     bit_size: 16
     fieldset: STAR1
   - name: STAR2
@@ -246,7 +245,7 @@ fieldset/STAR1:
     bit_size: 1
   - name: TIMEOUT
     description: RW0, Timeout or Tlow error flag.
-    bit_offset: 13
+    bit_offset: 14
     bit_size: 1
   - name: SMBALERT
     description: RW0, SMBus alert flag.
