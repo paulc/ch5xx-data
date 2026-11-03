@@ -88,7 +88,6 @@ block/TMR_NODMA:
   - name: INT_FLAG
     description: RW1, TMR interrupt flag.
     byte_offset: 6
-    access: Read
     bit_size: 8
     fieldset: INT_FLAG
   - name: FIFO_COUNT
