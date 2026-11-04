@@ -1,3 +1,7 @@
+# SysTick on CH585/CH584/CH581 (QingKe V3C): 32 bits, unlike the 64-bit
+# SysTick of CH583/CH592 (systick_ch583.yaml). The CH585 EVT's core_riscv.h
+# has a uint32_t CNT at 0x08 and CMP at 0x10, with 0x0C and 0x14 reserved; on
+# a CH584 those two read 0 and ignore writes.
 block/Systick:
   description: Systick register.
   items:
@@ -13,37 +17,15 @@ block/Systick:
     description: Systick counter low register.
     byte_offset: 8
     fieldset: STK_CNTL
-  - name: STK_CNTH
-    description: Systick counter high register.
-    byte_offset: 12
-    fieldset: STK_CNTH
   - name: STK_CMPLR
     description: Systick compare low register.
     byte_offset: 16
     fieldset: STK_CMPLR
-  - name: STK_CMPHR
-    description: Systick compare high register.
-    byte_offset: 20
-    fieldset: STK_CMPHR
-fieldset/STK_CMPHR:
-  description: Systick compare high register.
-  fields:
-  - name: CMPH
-    description: RW,CMPH.
-    bit_offset: 0
-    bit_size: 32
 fieldset/STK_CMPLR:
   description: Systick compare low register.
   fields:
   - name: CMPL
     description: RW,CMPL.
-    bit_offset: 0
-    bit_size: 32
-fieldset/STK_CNTH:
-  description: Systick counter high register.
-  fields:
-  - name: CNTH
-    description: RW,CNTH.
     bit_offset: 0
     bit_size: 32
 fieldset/STK_CNTL:

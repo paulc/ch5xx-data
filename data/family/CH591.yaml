@@ -141,5 +141,5 @@
   address: 0xE000F000
   registers:
     kind: systick
-    version: ch585
+    version: ch583
     block: Systick
